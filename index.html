@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>DWA Camera</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7f9;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    video {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 12px;
+      background: #000;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    #preview {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 12px;
+      display: none;
+      margin-top: 15px;
+    }
+
+    button {
+      border: none;
+      padding: 12px 20px;
+      margin: 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #startBtn {
+      background: #198754;
+      color: white;
+    }
+
+    #captureBtn {
+      background: #0d6efd;
+      color: white;
+      display: none;
+    }
+
+    #retakeBtn {
+      background: #6c757d;
+      color: white;
+      display: none;
+    }
+
+    #sendBtn {
+      background: #212529;
+      color: white;
+      display: none;
+    }
+
+    #status {
+      margin: 15px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background: #f0f0f0;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>DAILY WORK ATTENDANCE</h1>
+
+  <div class="subtitle">
+    Selfie Verification
+  </div>
+
+  <div id="status">
+    Klik "Buka Kamera" untuk memulai.
+  </div>
+
+  <video id="camera" autoplay playsinline></video>
+
+  <canvas id="canvas"></canvas>
+
+  <img id="preview" alt="Selfie Preview">
+
+  <div>
+    <button id="startBtn" onclick="startCamera()">
+      📷 Buka Kamera
+    </button>
+
+    <button id="captureBtn" onclick="takePhoto()">
+      📸 Ambil Selfie
+    </button>
+
+    <button id="retakeBtn" onclick="retakePhoto()">
+      🔄 Ambil Ulang
+    </button>
+
+    <button id="sendBtn" onclick="sendPhoto()">
+      ✅ Gunakan Selfie
+    </button>
+  </div>
+
+</div>
+
+<script>
+
+let cameraStream = null;
+let photoData = null;
+
+async function startCamera() {
+
+  const status = document.getElementById('status');
+
+  try {
+
+    status.innerText = 'Meminta izin kamera...';
+
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: 'user',
+        width: {
+          ideal: 1280
+        },
+        height: {
+          ideal: 720
+        }
+      },
+      audio: false
+    });
+
+    const video = document.getElementById('camera');
+
+    video.srcObject = cameraStream;
+
+    document.getElementById('captureBtn').style.display = 'inline-block';
+
+    status.innerText = 'Kamera aktif. Silakan ambil selfie.';
+
+  } catch (error) {
+
+    console.error(error);
+
+    status.innerText =
+      'Kamera gagal dibuka: ' + error.name;
+
+  }
+}
+
+
+function takePhoto() {
+
+  const video = document.getElementById('camera');
+  const canvas = document.getElementById('canvas');
+  const preview = document.getElementById('preview');
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext('2d');
+
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  photoData = canvas.toDataURL(
+    'image/jpeg',
+    0.85
+  );
+
+  preview.src = photoData;
+  preview.style.display = 'block';
+
+  video.style.display = 'none';
+
+  document.getElementById('captureBtn').style.display = 'none';
+
+  document.getElementById('retakeBtn').style.display = 'inline-block';
+
+  document.getElementById('sendBtn').style.display = 'inline-block';
+
+  document.getElementById('status').innerText =
+    'Selfie berhasil diambil.';
+
+}
+
+
+function retakePhoto() {
+
+  const video = document.getElementById('camera');
+  const preview = document.getElementById('preview');
+
+  photoData = null;
+
+  preview.style.display = 'none';
+
+  video.style.display = 'block';
+
+  document.getElementById('retakeBtn').style.display = 'none';
+
+  document.getElementById('sendBtn').style.display = 'none';
+
+  document.getElementById('captureBtn').style.display = 'inline-block';
+
+  document.getElementById('status').innerText =
+    'Silakan ambil selfie kembali.';
+
+}
+
+
+function sendPhoto() {
+
+  if (!photoData) {
+
+    alert('Selfie belum tersedia.');
+
+    return;
+
+  }
+
+  /*
+   * Untuk tahap ini kita hanya test
+   * bahwa foto berhasil diambil.
+   *
+   * Integrasi ke Apps Script
+   * akan kita tambahkan setelah
+   * kamera eksternal berhasil.
+   */
+
+  document.getElementById('status').innerText =
+    'Selfie siap dikirim ke DWA.';
+
+  alert('TEST BERHASIL: Selfie sudah siap dikirim.');
+
+}
+
+</script>
+
+</body>
+</html>
