@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
 
   <title>DWA Camera</title>
 
   <style>
+
     body {
       font-family: Arial, sans-serif;
       background: #f5f7f9;
@@ -90,8 +96,11 @@
       border-radius: 8px;
       background: #f0f0f0;
     }
+
   </style>
+
 </head>
+
 
 <body>
 
@@ -107,168 +116,397 @@
     Klik "Buka Kamera" untuk memulai.
   </div>
 
-  <video id="camera" autoplay playsinline></video>
+
+  <video
+    id="camera"
+    autoplay
+    playsinline>
+  </video>
+
 
   <canvas id="canvas"></canvas>
 
-  <img id="preview" alt="Selfie Preview">
+
+  <img
+    id="preview"
+    alt="Selfie Preview">
+
 
   <div>
-    <button id="startBtn" onclick="startCamera()">
+
+    <button
+      id="startBtn"
+      onclick="startCamera()">
+
       📷 Buka Kamera
+
     </button>
 
-    <button id="captureBtn" onclick="takePhoto()">
+
+    <button
+      id="captureBtn"
+      onclick="takePhoto()">
+
       📸 Ambil Selfie
+
     </button>
 
-    <button id="retakeBtn" onclick="retakePhoto()">
+
+    <button
+      id="retakeBtn"
+      onclick="retakePhoto()">
+
       🔄 Ambil Ulang
+
     </button>
 
-    <button id="sendBtn" onclick="sendPhoto()">
+
+    <button
+      id="sendBtn"
+      onclick="sendPhoto()">
+
       ✅ Gunakan Selfie
+
     </button>
+
   </div>
 
 </div>
 
+
 <script>
 
 let cameraStream = null;
+
 let photoData = null;
+
+
+/* ==========================================
+ * START CAMERA
+ * ========================================== */
 
 async function startCamera() {
 
-  const status = document.getElementById('status');
+  const status =
+    document.getElementById('status');
 
   try {
 
-    status.innerText = 'Meminta izin kamera...';
+    status.innerText =
+      'Meminta izin kamera...';
 
-    cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'user',
-        width: {
-          ideal: 1280
+
+    cameraStream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video: {
+
+          facingMode: 'user',
+
+          width: {
+            ideal: 1280
+          },
+
+          height: {
+            ideal: 720
+          }
+
         },
-        height: {
-          ideal: 720
-        }
-      },
-      audio: false
-    });
 
-    const video = document.getElementById('camera');
+        audio: false
 
-    video.srcObject = cameraStream;
+      });
 
-    document.getElementById('captureBtn').style.display = 'inline-block';
 
-    status.innerText = 'Kamera aktif. Silakan ambil selfie.';
+    const video =
+      document.getElementById('camera');
+
+
+    video.srcObject =
+      cameraStream;
+
+
+    document.getElementById(
+      'captureBtn'
+    ).style.display =
+      'inline-block';
+
+
+    status.innerText =
+      'Kamera aktif. Silakan ambil selfie.';
+
 
   } catch (error) {
 
     console.error(error);
 
     status.innerText =
-      'Kamera gagal dibuka: ' + error.name;
+      'Kamera gagal dibuka: ' +
+      error.name;
 
   }
+
 }
 
 
+/* ==========================================
+ * TAKE PHOTO
+ * ========================================== */
+
 function takePhoto() {
 
-  const video = document.getElementById('camera');
-  const canvas = document.getElementById('canvas');
-  const preview = document.getElementById('preview');
+  const video =
+    document.getElementById('camera');
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  const canvas =
+    document.getElementById('canvas');
 
-  const ctx = canvas.getContext('2d');
+  const preview =
+    document.getElementById('preview');
 
-  ctx.drawImage(
+
+  canvas.width =
+    video.videoWidth;
+
+  canvas.height =
+    video.videoHeight;
+
+
+  const context =
+    canvas.getContext('2d');
+
+
+  context.drawImage(
+
     video,
+
     0,
+
     0,
+
     canvas.width,
+
     canvas.height
+
   );
 
-  photoData = canvas.toDataURL(
-    'image/jpeg',
-    0.85
-  );
 
-  preview.src = photoData;
-  preview.style.display = 'block';
+  photoData =
+    canvas.toDataURL(
+      'image/jpeg',
+      0.85
+    );
 
-  video.style.display = 'none';
 
-  document.getElementById('captureBtn').style.display = 'none';
+  preview.src =
+    photoData;
 
-  document.getElementById('retakeBtn').style.display = 'inline-block';
 
-  document.getElementById('sendBtn').style.display = 'inline-block';
+  preview.style.display =
+    'block';
 
-  document.getElementById('status').innerText =
+
+  video.style.display =
+    'none';
+
+
+  document.getElementById(
+    'captureBtn'
+  ).style.display =
+    'none';
+
+
+  document.getElementById(
+    'retakeBtn'
+  ).style.display =
+    'inline-block';
+
+
+  document.getElementById(
+    'sendBtn'
+  ).style.display =
+    'inline-block';
+
+
+  document.getElementById(
+    'status'
+  ).innerText =
     'Selfie berhasil diambil.';
 
 }
 
 
+/* ==========================================
+ * RETAKE PHOTO
+ * ========================================== */
+
 function retakePhoto() {
 
-  const video = document.getElementById('camera');
-  const preview = document.getElementById('preview');
+  const video =
+    document.getElementById('camera');
 
-  photoData = null;
+  const preview =
+    document.getElementById('preview');
 
-  preview.style.display = 'none';
 
-  video.style.display = 'block';
+  photoData =
+    null;
 
-  document.getElementById('retakeBtn').style.display = 'none';
 
-  document.getElementById('sendBtn').style.display = 'none';
+  preview.style.display =
+    'none';
 
-  document.getElementById('captureBtn').style.display = 'inline-block';
 
-  document.getElementById('status').innerText =
+  video.style.display =
+    'block';
+
+
+  document.getElementById(
+    'retakeBtn'
+  ).style.display =
+    'none';
+
+
+  document.getElementById(
+    'sendBtn'
+  ).style.display =
+    'none';
+
+
+  document.getElementById(
+    'captureBtn'
+  ).style.display =
+    'inline-block';
+
+
+  document.getElementById(
+    'status'
+  ).innerText =
     'Silakan ambil selfie kembali.';
 
 }
 
 
+/* ==========================================
+ * SEND PHOTO TO DWA APPS SCRIPT
+ * ========================================== */
+
 function sendPhoto() {
+
+  const status =
+    document.getElementById('status');
+
 
   if (!photoData) {
 
-    alert('Selfie belum tersedia.');
+    status.innerText =
+      'Selfie belum tersedia.';
 
     return;
 
   }
 
+
   /*
-   * Untuk tahap ini kita hanya test
-   * bahwa foto berhasil diambil.
-   *
-   * Integrasi ke Apps Script
-   * akan kita tambahkan setelah
-   * kamera eksternal berhasil.
+   * Pastikan halaman kamera
+   * dibuka oleh halaman DWA.
    */
 
-  document.getElementById('status').innerText =
-    'Selfie siap dikirim ke DWA.';
+  if (!window.opener) {
 
-  alert('TEST BERHASIL: Selfie sudah siap dikirim.');
+    status.innerText =
+      'Halaman DWA tidak ditemukan. ' +
+      'Silakan buka kamera dari aplikasi DWA.';
+
+    return;
+
+  }
+
+
+  status.innerText =
+    'Mengirim selfie ke DWA...';
+
+
+  try {
+
+    window.opener.postMessage(
+
+      {
+        type: 'SELFIE_CAPTURED',
+        imageData: photoData
+      },
+
+      '*'
+
+    );
+
+
+    status.innerText =
+      '✅ Selfie berhasil dikirim ke DWA.';
+
+
+    /*
+     * Matikan kamera setelah
+     * foto berhasil dikirim.
+     */
+
+    stopCamera();
+
+
+    /*
+     * Tutup window kamera
+     * setelah 1 detik.
+     */
+
+    setTimeout(
+      function() {
+
+        window.close();
+
+      },
+      1000
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    status.innerText =
+      'Gagal mengirim selfie ke DWA.';
+
+  }
+
+}
+
+
+/* ==========================================
+ * STOP CAMERA
+ * ========================================== */
+
+function stopCamera() {
+
+  if (!cameraStream) {
+    return;
+  }
+
+
+  cameraStream
+    .getTracks()
+    .forEach(function(track) {
+
+      track.stop();
+
+    });
+
+
+  cameraStream =
+    null;
 
 }
 
 </script>
 
 </body>
+
 </html>
